@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         buttonRemoveMoney.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                double money = bottleDispenser.getAmount();
+                float money = bottleDispenser.getAmount();
                 textViewResult.setText("" + money + "€ removed");
                 bottleDispenser.removeMoney();
             }
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 choiceSizeStr = str.toString();
                 double choiceSize = Double.parseDouble(choiceSizeStr);
                 double choicePrice = bottleDispenser.ifLeft(choiceName, choiceSize);
-                if (choicePrice != 0.00) {
+                if (choicePrice != 0.0) {
                     double currentAmount = bottleDispenser.getAmount();
                     if (currentAmount > choicePrice) {
                         bottleDispenser.deleteItem(choiceName, choicePrice);
