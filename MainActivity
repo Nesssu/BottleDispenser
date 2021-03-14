@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private Spinner spinner;
     private int max = 10;
     private int min = 0;
-    private int current = 0;
+    private double current = 0.0;
     private String choice;
     private double price;
     Context context = null;
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         buttonRemoveMoney.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                float money = bottleDispenser.getAmount();
+                double money = bottleDispenser.getAmount();
                 textViewResult.setText("" + money + "€ removed");
                 bottleDispenser.removeMoney();
             }
