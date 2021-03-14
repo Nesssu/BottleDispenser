@@ -1,10 +1,12 @@
 package com.example.mybottledispenser.model;
 
 import com.example.mybottledispenser.model2.Bottle;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class BottleDispenser {
-    private float amount = 0.0f;
+    private double amount = 0.0;
     private static BottleDispenser instance;
     private ArrayList<Bottle> list = new ArrayList<Bottle>(); {
         Bottle bottle1 = new Bottle("Pepsi Max", 1.8, 0.5);
@@ -25,14 +27,20 @@ public class BottleDispenser {
         }
         return instance;
     }
-    public float getAmount() {
+    public double getAmount() {
         return amount;
     }
-    public void addAmount(int money) {
-        amount += money;
+    public void addAmount(double money) {
+        BigDecimal first = BigDecimal.valueOf(money);
+        BigDecimal second = BigDecimal.valueOf(amount);
+        BigDecimal third = second.add(first);
+        amount = third.doubleValue();
     }
     public void deleteItem(String name, double price) {
-        this.amount -= price;
+        BigDecimal first = BigDecimal.valueOf(price);
+        BigDecimal second = BigDecimal.valueOf(amount);
+        BigDecimal third = second.subtract(first);
+        amount = third.doubleValue();
         for (int i = 0; i < list.size(); i++) {
             if(list.get(i).name.equals(name)) {
                 list.remove(i);
@@ -51,6 +59,6 @@ public class BottleDispenser {
         return sum;
     }
     public void removeMoney() {
-        this.amount = 0.0F;
+        this.amount = 0.0;
     }
 }
