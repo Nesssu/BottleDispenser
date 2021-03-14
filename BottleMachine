@@ -1,0 +1,56 @@
+package com.example.mybottledispenser.model;
+
+import com.example.mybottledispenser.model2.Bottle;
+import java.util.ArrayList;
+
+public class BottleDispenser {
+    private double amount = 0.00;
+    private static BottleDispenser instance;
+    private ArrayList<Bottle> list = new ArrayList<Bottle>(); {
+        Bottle bottle1 = new Bottle("Pepsi Max", 1.80, 0.5);
+        list.add(bottle1);
+        Bottle bottle2 = new Bottle("Pepsi Max", 2.50, 1.5);
+        list.add(bottle2);
+        Bottle bottle3 = new Bottle("Coca-Cola Zero", 1.80, 0.5);
+        list.add(bottle3);
+        Bottle bottle4 = new Bottle("Coca-Cola Zero", 2.50, 1.5);
+        list.add(bottle4);
+        Bottle bottle5 = new Bottle("Fanta Zero", 1.80, 0.5);
+        list.add(bottle5);
+    }
+    private BottleDispenser() {}
+    public static BottleDispenser getInstance() {
+        if (instance == null) {
+            instance = new BottleDispenser();
+        }
+        return instance;
+    }
+    public double getAmount() {
+        return amount;
+    }
+    public void addAmount(int money) {
+        amount += money;
+    }
+    public void deleteItem(String name, double price) {
+        this.amount -= price;
+        for (int i = 0; i < list.size(); i++) {
+            if(list.get(i).name.equals(name)) {
+                list.remove(i);
+            }
+        }
+    }
+    public double ifLeft(String name, double size) {
+        double sum = 0.00;
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).name.equals(name)) {
+                if (list.get(i).size == size) {
+                    sum = list.get(i).price;
+                }
+            }
+        }
+        return sum;
+    }
+    public void removeMoney() {
+        this.amount = 0.00;
+    }
+}
