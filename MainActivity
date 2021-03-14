@@ -1,0 +1,139 @@
+package com.example.mybottledispenser;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import com.example.mybottledispenser.model.BottleDispenser;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private BottleDispenser bottleDispenser;
+    private Button buttonAddMoney;
+    private Button buttonRemoveMoney;
+    private Button buttonBuySoda;
+    private Button buttonReceipt;
+    private SeekBar seekBar;
+    private TextView textView;
+    private TextView textViewResult;
+    private Spinner spinner;
+    private int max = 10;
+    private int min = 0;
+    private int current = 0;
+    private String choice;
+    private double price;
+    Context context = null;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        bottleDispenser = BottleDispenser.getInstance();
+        context = MainActivity.this;
+        buttonAddMoney = (Button) findViewById(R.id.buttonAddMoney);
+        buttonBuySoda = (Button) findViewById(R.id.buttonBuySoda);
+        buttonRemoveMoney = (Button) findViewById(R.id.buttonRemoveMoney);
+        buttonReceipt = (Button) findViewById(R.id.buttonReceipt);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        textView = (TextView) findViewById(R.id.textView);
+        textViewResult = (TextView) findViewById(R.id.textViewResult);
+        spinner = (Spinner) findViewById(R.id.spinner);
+        String[] arrayBottles = new String[] {"Pepsi Max, 0.5L", "Pepsi Max, 1.5L", "Coca-Cola Zero, 0.5L", "Coca-Cola Zero, 1.5L", "Fanta Zero, 0.5L"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, arrayBottles);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+        seekBar.setMax(max);
+        textView.setText("" + min + "€");
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                current = progress;
+                textView.setText("" + current + "€");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        buttonAddMoney.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textViewResult.setText("" + current + " € added");
+                bottleDispenser.addAmount(current);
+                seekBar.setProgress(0);
+            }
+        });
+        buttonRemoveMoney.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                double money = bottleDispenser.getAmount();
+                textViewResult.setText("" + money + "€ removed");
+                bottleDispenser.removeMoney();
+            }
+        });
+        buttonBuySoda.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String[] choices = choice.split(",", 2);
+                String choiceName = choices[0];
+                String choiceSizeStr = choices[1];
+                StringBuilder str = new StringBuilder(choiceSizeStr);
+                str.deleteCharAt(choiceSizeStr.length() - 1);
+                choiceSizeStr = str.toString();
+                double choiceSize = Double.parseDouble(choiceSizeStr);
+                double choicePrice = bottleDispenser.ifLeft(choiceName, choiceSize);
+                if (choicePrice != 0.00) {
+                    double currentAmount = bottleDispenser.getAmount();
+                    if (currentAmount > choicePrice) {
+                        bottleDispenser.deleteItem(choiceName, choicePrice);
+                        price = choicePrice;
+                        textViewResult.setText("" + choiceName + " " + choiceSize + "L bought");
+                    } else {
+                        textViewResult.setText("Not enough money. Add more!");
+                    }
+                } else {
+                    textViewResult.setText("No bottles left");
+                }
+            }
+        });
+        buttonReceipt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    OutputStreamWriter writer = new OutputStreamWriter(context.openFileOutput("receipts.txt", Context.MODE_PRIVATE));
+                    writer.append("Receipt:\n").append("Bottle: ").append(choice).append("\nPrice: ").append(String.valueOf(price)).append("\n");
+                    writer.close();
+                } catch (IOException e) {
+                    Log.e("IOException", "Input Error" + e.toString());
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        choice = parent.getItemAtPosition(position).toString();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+}
