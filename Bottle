@@ -1,0 +1,12 @@
+package com.example.mybottledispenser.model2;
+
+public class Bottle {
+    public double size;
+    public double price;
+    public String name;
+    public Bottle(String name, double price, double size) {
+        this.size = size;
+        this.price = price;
+        this.name = name;
+    }
+}
